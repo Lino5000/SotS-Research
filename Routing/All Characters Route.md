@@ -1,0 +1,3 @@
+It is unlikely that all characters can be reached in a single run of 5 cycles, due to certain characters that require completing storylines to reach them.
+
+For example; to talk to `hara_inhabitant` (who doesn't have an official name, but shall hereby be known as Geoffery) we have to befriend both Isabella and Marques to unlock Hara, then go there in the last cycle. Similarly, to talk to William, we have to unlock Persarrey, which requires regaining XN-220's memories. Completing both of these storylines in one run while also reaching and talking to every other character is likely to be quite difficult.

@@ -1,0 +1,4 @@
+- Each character has a certain number of discordances that are allowed before they become mad with you. They then will have a different sprite, and you will not be able to enter another conversation with them.
+    - This "mad" state is set when you return to the character select screen after the conversation where their discordance threshold is exceeded.
+- You can only gain a maximum of 10 Fatigue on any given cycle; The particular days that fatigue is added are fixed to 7, 14, 20, 26, 31, 36, 40, 44, 47, and 50.
+    - This is gaps of 7, 7, 6, 6, 5, 5, 4, 4, 3, and 3.

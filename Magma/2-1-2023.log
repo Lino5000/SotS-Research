@@ -1,0 +1,237 @@
+> F:=GF(2);
+> Id:=ScalarMatrix(F, 128, 1);
+> NumToVec:= function(num)
+function> v:= ZeroMatrix(F, 128, 1);
+function> for i:=1 to 128
+function|for> v[i]:= ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+
+>> v[i]:= ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+   ^
+User error: bad syntax
+> NumToVec:= function(num)
+function> v:= Vector([0: x in (1..128)]);
+
+>> v:= Vector([0: x in (1..128)]);
+                         ^
+User error: bad syntax
+> v:= Vector([0: x in [1..128]]);
+> v;
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+> #v;v;
+
+>> #v;v;
+   ^
+Runtime error in '#': Bad argument types
+Argument types given: ModTupRngElt[RngInt]
+
+(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+> #v;
+
+>> #v;
+   ^
+Runtime error in '#': Bad argument types
+Argument types given: ModTupRngElt[RngInt]
+
+> NumToVec:= function(num)
+function> v:= Vector([0: x in [1..128]]);
+function> for i:=1 to 128 do
+function|for> v[i]:= ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+function|for> num := ShiftRight(num, 1);
+function|for> end for;
+function> return v;
+function> end function;
+> NumToVec(5);
+(1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+> VecToNum:= function(v)
+function> num:=0;
+function> for i:=1 to 128 do
+function|for> num:= ShiftLeft(num, 1);
+function|for> num := num + v[i];
+function|for> end for;
+function> return num;
+function> end function;
+> VecToNum(NumToVec(5));
+212676479325586539664609129644855132160
+> // NumToVec goes the wrong way lol
+> NumToVec:= function(num)
+function> v:= Vector([0: x in [1..128]]);
+function> for i:=128 to 1 do
+function|for> v[i]:= ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+function|for> num := ShiftRight(num, 1);
+function|for> end for;
+function> return v;
+function> end function;
+> VecToNum(NumToVec(5));
+0
+> // For loop never runs, 'cause I didn't tell it to go backwards
+> NumToVec:= function(num)
+function> v:= Vector([0: x in [1..128]]);
+function> for i:=128 to 1 by -1 do
+function|for> v[i]:= ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+function|for> num := ShiftRight(num, 1);
+function|for> end for;
+function> return v;
+function> end function;
+> VecToNum(NumToVec(5));
+5
+> // There we go!
+> for i:=1 to 100 do
+for> n:= RandomBits(128);
+for> if n ne VecToNum(NumToVec(n)) then
+for|if> "Inverse Test failed on value:",n;
+for|if> end if;
+for> end for;
+> // No failures, I'll call that a success.
+> // Now we implement the actual PRNG algorithm, so we can test the matrix we build
+> xorshift128:= function(~state)
+function> // state consists of 4 32-bit blocks (state0 is [1..32], state1 is [33..64], state2 is [65..96], and state3 is [97..128])
+function> t:= state[97..128]; // state3
+function> s:= state[1..32]; // state0
+function> state[97..128] := state[65..96]; // state3 := state2
+function> state[65..96] := state[33..64]; // state2 := state1
+function> state[33..64] := s; // state1 := state0
+function> end function;
+
+>> xorshift128:= function(~state)
+                          ^
+User error: Reference parameters are only allowed in procedures
+> // That was all sorts of wrong, let's try again
+> xorshift128 := procedure(~state)
+procedure> exit
+procedure> ;
+procedure> end procedure;
+> // Got confused, try again
+> xorshift128 := procedure(~state) // Will return a 32-bit integer
+procedure> t := ShiftRight(state, 96); // Extract top 32 bits
+procedure> s := ModByPowerOf2(state, 32); // Extract bottom 32 bits
+procedure> state := ShiftLeft(state, 32); // Rotate blocks
+procedure> t := BitwiseXor(t, ShiftLeft(t, 11));
+procedure> t := BitwiseXor(t, ShiftRight(t, 8));
+procedure> state := BitwiseOr(state, BitwiseXor(t, BitwiseXor(s, ShiftRight(s, 19)))); // Final piece of the new state
+procedure> return ModByPower2(state, 32); // Return the newly calculated bottom 32 bits
+procedure> end procedure;
+
+>> return ModByPower2(state, 32); // Return the newly calculated bottom 32 bits
+   ^
+User error: procedures cannot return a value
+> // Oh, fun, ok, return parameter it is
+> xorshift128 := procedure(~state, ~ret)
+procedure> t := ShiftRight(state, 96); // Extract top 32 bits
+procedure> s := ModByPowerOf2(state, 32); // Extract bottom 32 bits
+procedure> state := ShiftLeft(state, 32); // Rotate blocks
+procedure> t := BitwiseXor(t, ShiftLeft(t, 11));
+procedure> t := BitwiseXor(t, ShiftRight(t, 8));
+procedure> ret := BitwiseXor(t, BitwiseXor(s, ShiftRight(s, 19))); // Return the final piece of the new state
+procedure> state := BitwiseOr(state, ret); // Add the final part to the state
+procedure> end procedure;
+> // Just out of interest, let's see some outputs
+> state := RandomBits(128);
+> state;
+8218317251833526761221940544485375894
+> for i:= 1 to 10 do
+for> ret:=0;
+for> xorshift128(state, ret);
+for> "New state:",state," Returned value:",ret;
+for> end for;
+
+>> xorshift128(state, ret);
+              ^
+Runtime error in procedure call: Argument 2 must be a variable reference (use ~)
+> for i:= 1 to 10 do
+for> ret:=0;
+for> xorshift128(~state, ~ret);
+for> "New state:",state," Returned value:",ret;
+for> end for;
+New state: 35297403824777593475789035636221122757542188980  Returned value: 211264903092
+New state: 151601195061125078452096875852948275272728818130675467926  Returned value: 908577618219518822038
+New state: 651122174822048932917190384412184947475975754551448526778274948398  Returned value: 3902311156133852782612058219822
+New state: 2796548446561094786591030577256002533312793611487394571940082001601871189540  Returned value: 16760298794410847499787256253552367736356
+New state: 12011084119659505774364575656250532300271599099736089602730571468439211179789082567367  Returned value: 71984935193182817599229632566564829525360787727047
+New state: 51587213483442527956419007624513774212258170050989547074653436756337108181242062530404239098408  Returned value: 
+309172942459399643737824506667492485875245363465260149588520
+New state: 221565394803155895068385351020061308143177002677806757123488981402472200389648699227677824881823316890421  Returned value: 
+1327887676671211277648007454324214173159920772058927017500919926281013
+New state: 951616124604882926908322766156643558389923712040484446853200208539970314222699620111816715891849755509578542262022  Returned value: 
+5703234144064274582204567815886713654621540693944162125017273499835995851237126
+New state: 4087160133524233092980004670855039696413788759148802127231145008619552408397338529211876657901618172859235797962646448840447  Returned value: 
+24495204130186611852532682351047584387516156537623321577071053116883063054268195674857215
+New state: 17554219107001574357830047243249639852878991203996525934032998844654615700224604756405750900473230037909692563802034585968143816789644  Returned value: 
+105206100647995624283673845468905766284182083000708759740411316605291621274387776473305840152809100
+> // Forgot to restrict the new state to 128 bits lol
+> xorshift128 := procedure(~state, ~ret)
+procedure> t := ShiftRight(state, 96); // Extract top 32 bits
+procedure> s := ModByPowerOf2(state, 32); // Extract bottom 32 bits
+procedure> state := ModByPowerOf2(ShiftLeft(state, 32), 128); // Rotate blocks
+procedure> t := BitwiseXor(t, ShiftLeft(t, 11));
+procedure> t := BitwiseXor(t, ShiftRight(t, 8));
+procedure> ret := BitwiseXor(t, BitwiseXor(s, ShiftRight(s, 19))); // Return the final piece of the new state
+procedure> state := BitwiseOr(state, ret); // Add the final part to the state
+procedure> end procedure;
+> for i:= 1 to 5 do
+for> ret:=0;
+for> xorshift128(~state, ~ret);
+for> "New state:",state," Returned value:",ret;
+for> end for;
+New state: 451856761622825614249482593019508051096381488597201667905788054408029265622448346726682293067946822942212533  Returned value: 
+451856761622825614249482593019508051096381488597201667905788054408029253916313342375006806422341980126855605
+New state: 11729634218191362403113963345709957472180863545925358791223778126314965536964173725  Returned value: 
+11729634218191362403113963345709957472180863342196645408139309634682166088920555421
+New state: 301931333107310394491245308106992431336736732926116827091  Returned value: 301931333107310394319455148732350403035141066787786264531
+New state: 170141142261814447261216568151177663463  Returned value: 7837598086582088641698306429927
+New state: 340238227314338977442692210686158686792  Returned value: 4381395110472
+> // Really need to see these in binary to know if it's working properly
+> for i:= 1 to 5 do
+for> ret:=0;
+for> xorshift128(~state, ~ret);
+for> "New state:",state:Hex," Returned value:",ret:Hex;
+
+>> "New state:",state:Hex," Returned value:",ret:Hex;
+                         ^
+User error: bad syntax
+> for i:= 1 to 5 do
+for> ret:=0;
+for> xorshift128(~state, ~ret);
+for> "New state:";
+for> state:Hex;
+for> "Returned value:"
+for> ret:Hex;
+
+>> ret:Hex;
+   ^
+User error: bad syntax
+> for i:= 1 to 5 do
+for> ret:=0;
+for> xorshift128(~state, ~ret);
+for> "New state:";
+for> state:Hex;
+for> "Returned value:";
+for> ret:Hex;
+for> end for;
+New state:
+0xD6F72FFF60EF93FF1F7FCFF8A431449F
+Returned value:
+0x7F8A431449F
+New state:
+0x60EF93FF1F7FCFF8A43146BF7CD60F31
+Returned value:
+0x6B17CD60F31
+New state:
+0x1F7FCFF8A43146BF7CD60F3567BA1B3F
+Returned value:
+0x30467BA1B3F
+New state:
+0xA43146BF7CD60F3567BA1BFF7D5B183F
+Returned value:
+0xFB7D5B183F
+New state:
+0x7CD60F3567BA1BFF7D5B1D3F7271AD95
+Returned value:
+0x5247271AD95
+> // Something's not working, that's 43 bits being returned, not 32...
+> // Need to look at the log, new session time.
+> exit;
+
+Total time: 0.546 seconds, Total memory usage: 10.47MB

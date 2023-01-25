@@ -1,0 +1,73 @@
+// The base algorithm; takes a 128 bit state integer and applies the xorshift128 PRNG to it.
+xorshift128 := procedure(~state, ~ret)
+    t := ShiftRight(state, 96); // Top 32 bits
+    s := ModByPowerOf2(state, 32); // Bottom 32 bits
+    state := ModByPowerOf2(ShiftLeft(state, 32), 128); // Rotate blocks
+    t := BitwiseXor(t, ModByPowerOf2(ShiftLeft(t, 11), 32));
+    t := BitwiseXor(t, ShiftRight(t, 8));
+    ret := BitwiseXor(t, BitwiseXor(s, ShiftRight(s, 19)));
+    state := BitwiseOr(state, ret);
+end procedure;
+
+// The field that we use for our vectors. This is the integers modulo 2.
+F := GF(2);
+
+// Convert an integer into a bit vector. Note that this is a row vector, with most significant bit first.
+NumToVec := function(num)
+    v := Vector(F, [0: x in [1..128]]);
+    for i:=128 to 1 by -1 do
+        v[i] := ((BitwiseAnd(num, 1) ne 0) select 1 else 0);
+        num := ShiftRight(num, 1);
+    end for;
+    return v;
+end function;
+
+// Convert a bit vector into an integer. This expects the bit vector to be in the same form as the output of NumToVec.
+VecToNum := function(v)
+    num := 0;
+    for i:=1 to 128 do
+        num := ShiftLeft(num, 1);
+        num := num + Integers()!v[i];
+    end for;
+    return num;
+end function;
+
+// Wrapper around `xorshift128` that expects the parameters to be bit vectors.
+VecXorshift128 := procedure(~state, ~ret)
+    stateNum := VecToNum(state);
+    retNum := 0;
+    xorshift128(~stateNum, ~retNum);
+    state := NumToVec(stateNum);
+    ret := NumToVec(retNum);
+end procedure;
+
+// Function that just returns the state that follows the given one, storing the state as a bit vector.
+VecXorshiftStep := function(state)
+    // State is a new variable with the same value as the parameter, so we can modify it directly
+    ret := Vector(F, [0: x in [1..128]]); // Dummy vector to be replaced with ret, never actually used lol
+    VecXorshift128(~state, ~ret);
+    return state;
+end function;
+
+// Now we build the matrix:
+Id := ScalarMatrix(F, 128, 1); // 128x128 Identity matrix over F.
+Xorshift128Matrix := Id;
+for i:=1 to 128 do
+    Xorshift128Matrix[i] := VecXorshiftStep(Id[i]);
+end for;
+// `Xorshift128Matrix` is now the matrix that represents one step of the `xorshift128` algorithm on a state vector.
+// Note that since all our vectors are row vectors, this matrix gets multiplied on the right.
+// To convert to 'normal' linear algebra, one must convert to column vectors and multiply on the left by the transpose.
+
+// Take a 128 bit `state` integer and apply the `xorshift128` algorithm `steps` times.
+// A negative number of steps will apply the inverse algorithm.
+// This is actually more efficient asymptotically, 
+//    because we are using powers of the `Xorshift128Matrix` rather than repeatedly running the procedure.
+Xorshift128MultiStep := function(state, steps)
+    return VecToNum(NumToVec(state) * (Xorshift128Matrix ^ steps));
+end function;
+
+// Extract the most recent output from the integer `state` of the `xorshift128` PRNG.
+Xorshift128GetLastOutput := function(state)
+    return ModByPowerOf2(state, 32); // Extract bottom 32 bits
+end function;

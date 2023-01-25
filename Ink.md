@@ -1,0 +1,1 @@
+Much of SotS' story is handled through [Ink](https://www.inklestudios.com/ink/). Looking through the C# code, we can see that the RNG for Ink code is completely separate from the RNG for C# code, so it can't be manipulated in the same way. It probably can still be manipulated, but whether it is worth doing so is uncertain at this point.

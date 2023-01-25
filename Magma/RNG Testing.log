@@ -1,0 +1,27 @@
+> load "xorshift128-tools.txt";
+Loading "xorshift128-tools.txt"
+> v0 := 0x00000001
+> ;v1 := 0x6C078966
+> ;
+> v2 := 0x714ACB3F;
+> v3 := 0xDBFFE6DC;
+> state := v0;
+> state := ShiftLeft(state, 32) + v1;
+> state := ShiftLeft(state, 32) + v2;
+> state := ShiftLeft(state, 32) + v3;
+> state:Hex;
+0x16C078966714ACB3FDBFFE6DC
+> ret := 0;
+> xorshift128(~state, ~ret);
+> state:Hex;
+0x6C078966714ACB3FDBFFE6DCDBFFF5AA
+> ret:Hex;
+0xDBFFF5AA
+> // As I thought; the state is modified using the same algorithm, but the output is mangled, presumably to ensure a f\
+loat in the interval [0, 1]
+> ret / (2^32);
+1845492437/2147483648
+> // Nevermind, I should try this in Unity
+> exit;
+
+Total time: 0.203 seconds, Total memory usage: 10.48MB

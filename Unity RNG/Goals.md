@@ -1,0 +1,5 @@
+- Determine which things impact card selections for NPCs.
+    - How is RNG used?
+    - What is the effect of the player's choices?
+- Be able to solve for RNG states that will give specific outcomes.
+    - Eg. Could make a tool that looks at events that have happened to determine the sees, and then searches through the future sequence to find a favourable meeting with a specific character, informing the player of how many RNG events should happen between now and the conversation starting to have good RNG.
