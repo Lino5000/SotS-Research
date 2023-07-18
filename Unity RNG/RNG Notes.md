@@ -13,9 +13,9 @@ For some uses, the game switches out the internal state of the PRNG using the `S
 
 This 'Important RNG' is used for the following things:
 - The small amount of randomness involved in conversations; see [[Game Sequence]].
-- Every time you start travelling along a road, one call is made to see if a special event will occur.
+- Every time you start travelling along a road, one call is made to see if a special event will occur. This is approximately equivalent to a 1/3 chance for each dot on the road.
     - If one will occur, 3 more calls are made to see which event it will be, and when in the journey it will be. (see `FlowState.Map` case in `FlowX`)
-    - If the event is of the right type, more calls will occur to choose which card in the deck to replace / copy.
+    - If the event is of the right type and the player chooses to follow it, more calls will occur to choose which card in the deck to replace / copy.
 
 # Breaking the PRNG
 To be able to break the xorshift128 algorithm that Unity uses, we first need to understand how it works. Most of the following is drawn directly from the [relevant Wikipedia article](https://en.wikipedia.org/wiki/Xorshift#Example_implementation).

@@ -45,7 +45,7 @@ They then sort this "preview" hand by two criteria:
         - Samuel
         - Thunder
         - XN-220
-1) If the NPC can see any of the player's hand due to having played an *Observe* card, cards that can be successfully followed by a card the NPC knows the player has will be preferred over ones that can't.
+2) If the NPC can see any of the player's hand due to having played an *Observe* card, cards that can be successfully followed by a card the NPC knows the player has will be preferred over ones that can't.
 They will plan to choose the first card in this sorted hand that won't cause a discordance, then continue through the later checks. If there is no card that won't cause a discordance when played normally, they don't plan any card yet.
 
 If the planned card (if there is one) has the *Clarify* effect, the NPC will plan to choose the earliest valid location in the sequence to place it. Otherwise, they will plan to simply play it normally.
